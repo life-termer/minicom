@@ -1,0 +1,28 @@
+{
+  "name": "minicom",
+  "version": "1.0.0",
+  "description": "MiniCom - Live Chat Support Demo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:visitor": "npm run dev --workspace=@minicom/visitor-app",
+    "dev:agent": "npm run dev --workspace=@minicom/agent-app",
+    "dev:all": "start npm run dev:visitor & start npm run dev:agent"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/life-termer/minicom.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/life-termer/minicom/issues"
+  },
+  "homepage": "https://github.com/life-termer/minicom#readme"
+}
