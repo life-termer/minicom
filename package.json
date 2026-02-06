@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/life-termer/minicom/issues"
   },
-  "homepage": "https://github.com/life-termer/minicom#readme"
+  "homepage": "https://github.com/life-termer/minicom#readme",
+  "dependencies": {
+    "lucide-react": "^0.563.0"
+  }
 }

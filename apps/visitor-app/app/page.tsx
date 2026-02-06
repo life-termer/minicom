@@ -1,17 +1,252 @@
-import Image from "next/image";
+"use client";
+
+import * as React from "react";
+import { X } from "lucide-react";
+
+import {
+  Avatar,
+  Badge,
+  Button,
+  ChatInput,
+  MessageList,
+  ThemeToggle,
+  TypingIndicator,
+  UnreadBadge,
+} from "../../../packages/shared/ui";
+
+const messages = [
+  {
+    id: "m1",
+    text: "Hey! I am checking the pricing for the Growth plan.",
+    from: "visitor" as const,
+    time: "09:41",
+    status: "read" as const,
+  },
+  {
+    id: "m2",
+    text: "Happy to help. Want a quick walkthrough?",
+    from: "agent" as const,
+    time: "09:42",
+  },
+  {
+    id: "m3",
+    text: "Yes please. Also need SSO for the team.",
+    from: "visitor" as const,
+    time: "09:42",
+    status: "delivered" as const,
+  },
+];
+
+const avatars = [
+  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=200&auto=format&fit=crop",
+];
 
 export default function Home() {
+  const [open, setOpen] = React.useState(false);
+  const [isDark, setIsDark] = React.useState(false);
+
+  React.useEffect(() => {
+    const root = document.documentElement;
+    const stored = root.dataset.theme;
+    if (stored === "dark" || stored === "light") {
+      setIsDark(stored === "dark");
+      return;
+    }
+
+    const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+    setIsDark(prefersDark);
+  }, []);
+
+  React.useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.theme = isDark ? "dark" : "light";
+    root.style.colorScheme = isDark ? "dark" : "light";
+  }, [isDark]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            Visitors APP
-          </h1>
-          
+    <div className="min-h-screen bg-[var(--mc-bg)] text-[var(--mc-text)]">
+      <div className="relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,#dbeafe,transparent_55%)]" />
+        <header className="relative mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--mc-primary)] text-sm font-semibold text-[var(--mc-primary-foreground)]">
+              MC
+            </div>
+            <div>
+              <p className="text-sm font-semibold">MiniCom</p>
+              <p className="text-xs text-[var(--mc-text-muted)]">
+                Real-time customer support
+              </p>
+            </div>
+          </div>
+          <nav className="hidden items-center gap-6 text-sm text-[var(--mc-text-muted)] md:flex">
+            <span>Product</span>
+            <span>Solutions</span>
+            <span>Pricing</span>
+            <span>Security</span>
+          </nav>
+          <div className="flex items-center gap-3">
+            <ThemeToggle isDark={isDark} onToggle={() => setIsDark((prev) => !prev)} />
+            <Button variant="outline" size="sm">
+              Sign in
+            </Button>
+            <Button size="sm">Book a demo</Button>
+          </div>
+        </header>
+
+        <main className="relative mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 pb-24 pt-10 lg:grid-cols-[1.2fr_0.8fr]">
+          <section className="flex flex-col gap-8">
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge variant="primary">New</Badge>
+              <span className="text-sm text-[var(--mc-text-muted)]">
+                Launching shared inbox + AI summaries
+              </span>
+            </div>
+            <div className="space-y-4">
+              <h1 className="text-4xl font-semibold leading-tight md:text-5xl">
+                Support that feels like a real-time conversation.
+              </h1>
+              <p className="max-w-xl text-base text-[var(--mc-text-muted)]">
+                MiniCom helps teams respond faster with smart routing,
+                lightweight automations, and an interface your customers love.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button>Start free trial</Button>
+              <Button variant="outline">View case study</Button>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {[
+                {
+                  title: "24/7 response",
+                  body: "Keep SLAs green with live notifications.",
+                },
+                {
+                  title: "Unified inbox",
+                  body: "Email, chat, and socials in one place.",
+                },
+                {
+                  title: "Secure",
+                  body: "SOC 2 compliant with SSO support.",
+                },
+              ].map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-2xl border border-[var(--mc-border)] bg-[var(--mc-bg-secondary)] p-4 shadow-sm"
+                >
+                  <p className="text-sm font-semibold">{item.title}</p>
+                  <p className="mt-2 text-xs text-[var(--mc-text-muted)]">
+                    {item.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="flex flex-col gap-6">
+            <div className="rounded-3xl border border-[var(--mc-border)] bg-[var(--mc-bg-secondary)] p-6 shadow-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-[var(--mc-text-muted)]">Active agents</p>
+                  <p className="text-2xl font-semibold">6 online</p>
+                </div>
+                <div className="flex -space-x-2">
+                  {avatars.map((src, index) => (
+                    <Avatar key={src} src={src} size="sm" className="ring-2 ring-white" />
+                  ))}
+                </div>
+              </div>
+              <div className="mt-6 space-y-4">
+                {["Billing", "Onboarding", "API Support"].map((label) => (
+                  <div
+                    key={label}
+                    className="flex items-center justify-between rounded-2xl border border-[var(--mc-border)] bg-[var(--mc-bg)] px-4 py-3"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold">{label}</p>
+                      <p className="text-xs text-[var(--mc-text-muted)]">
+                        Avg. response 2m
+                      </p>
+                    </div>
+                    <Badge variant="success">Healthy</Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-[var(--mc-border)] bg-[var(--mc-bg-secondary)] p-6 shadow-sm">
+              <p className="text-sm font-semibold">Trusted by teams</p>
+              <p className="mt-3 text-xs text-[var(--mc-text-muted)]">
+                "MiniCom helped us cut response times by 41% while keeping the
+                tone personal."
+              </p>
+              <div className="mt-4 flex items-center gap-3">
+                <Avatar fallback="AL" size="sm" />
+                <div>
+                  <p className="text-xs font-semibold">Amara Lane</p>
+                  <p className="text-[11px] text-[var(--mc-text-muted)]">
+                    Support Lead, Citylane
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--mc-primary)] text-[var(--mc-primary-foreground)] shadow-xl transition hover:translate-y-[-2px]"
+        aria-label="Open chat"
+      >
+        <span className="relative">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-6 w-6"
+          >
+            <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
+          </svg>
+          <span className="absolute -right-3 -top-3">
+            <UnreadBadge count={2} />
+          </span>
+        </span>
+      </button>
+
+      {open && (
+        <div className="fixed bottom-24 right-6 z-40 w-[320px] overflow-hidden rounded-3xl border border-[var(--mc-border)] bg-[var(--mc-bg)] shadow-2xl">
+          <div className="flex items-center gap-3 border-b border-[var(--mc-border)] bg-[var(--mc-bg-muted)] px-4 py-3">
+            <Avatar
+              src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=200&auto=format&fit=crop"
+              size="md"
+            />
+            <div className="flex-1">
+              <p className="text-sm font-semibold">Avery · Support</p>
+              <p className="text-xs text-[var(--mc-text-muted)]">Online now</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="text-xs text-[var(--mc-text-muted)] hover:cursor-pointer hover:text-[var(--mc-text)]"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+          <div className="max-h-[320px] space-y-3 overflow-y-auto px-4 py-4">
+            <MessageList messages={messages} ownSide="visitor" />
+            <TypingIndicator label="Avery is typing" />
+          </div>
+          <ChatInput onSend={() => undefined} />
         </div>
- 
-      </main>
+      )}
     </div>
   );
 }
