@@ -17,4 +17,4 @@ export * from "./organisms/MessageList";
 export * from "./molecules/ChatInput";
 export * from "./organisms/ChatWidget";
 
-export * from "./templates/AppLayout";
+export * from "./templates/AgentDashboardLayout";

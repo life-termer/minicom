@@ -3,15 +3,15 @@ import * as React from "react";
 type AppLayoutProps = {
   header?: React.ReactNode;
   sidebar?: React.ReactNode;
-  composer?: React.ReactNode;
-  children: React.ReactNode;
+  content?: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
 };
 
-export function AppLayout({
+export function AgentDashboardLayout({
   header,
   sidebar,
-  composer,
+  content,
   children,
   className,
 }: AppLayoutProps) {
@@ -32,8 +32,8 @@ export function AppLayout({
             {header}
           </header>
         )}
-        <main className="flex-1 overflow-y-auto px-4 py-4">{children}</main>
-        {composer}
+        {/* <main className="flex-1 overflow-y-auto px-4 py-4">{children}</main> */}
+        {content}
       </section>
     </div>
   );

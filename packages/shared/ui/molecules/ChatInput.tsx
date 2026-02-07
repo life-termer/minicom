@@ -3,8 +3,7 @@
 import * as React from "react";
 
 import { nanoid } from "nanoid";
-import { useChatStore } from "@minicom/shared";
-import { Message, MessageStatus } from "@minicom/shared";
+import { Message, MessageStatus, sendMessageOptimistic, useChatStore } from "@minicom/shared";
 
 import { Button } from "../atoms/Button";
 import { Input } from "../atoms/Input";
@@ -34,10 +33,11 @@ export function ChatInput({
       senderId: authorId,
       body: value.trim(),
       createdAt: Date.now(),
-      status: MessageStatus.SENT,
+      status: MessageStatus.SENDING,
     };
 
     addMessage(message);
+    sendMessageOptimistic(message);
     setValue("");
   }
 
