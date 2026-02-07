@@ -20,7 +20,7 @@ export function InboxList({
   }, [threadMap])
 
   return (
-    <ul role="listbox" aria-label="Inbox">
+    <div className="flex-1 space-y-3 overflow-y-auto">
       {threads.map((thread) => (
         <InboxListItem
           key={thread.id}
@@ -29,6 +29,6 @@ export function InboxList({
           onClick={() => onSelect(thread.id)}
         />
       ))}
-    </ul>
+    </div>
   )
 }

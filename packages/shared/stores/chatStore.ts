@@ -1,6 +1,7 @@
 // Import shared domain types for chat data and typing state
 import { Message, Thread, TypingState } from '@minicom/shared'
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { sortMessagesByTime } from '../utils/sortMessages'
 import { MessageStatus } from '../constants/messageStatus'
 
@@ -19,10 +20,23 @@ export type ChatActions = {
   failMessage: (messageId: string) => void // mark a message as FAILED
   setTyping: (typing: TypingState) => void // set typing state for a participant
   markThreadRead: (threadId: string) => void // reset unread count for agent
+  clearAll: () => void // clear all threads/messages/typing (testing)
+}
+
+const STORAGE_KEY = "minicom-chat-store";
+
+function sortMessagesMap(messages: ChatState["messages"]) {
+  const sorted: ChatState["messages"] = {};
+  for (const threadId in messages) {
+    sorted[threadId] = sortMessagesByTime(messages[threadId]);
+  }
+  return sorted;
 }
 
 // Create Zustand store with state + actions
-export const useChatStore = create<ChatState & ChatActions>()((set) => ({
+export const useChatStore = create<ChatState & ChatActions>()(
+  persist(
+    (set) => ({
   // Initial state
   threads: {},
   messages: {},
@@ -118,6 +132,27 @@ export const useChatStore = create<ChatState & ChatActions>()((set) => ({
           unreadCountByAgent: 0
         }
       }
+    })),
+
+  clearAll: () =>
+    set(() => ({
+      threads: {},
+      messages: {},
+      typing: {}
     }))
-}))
+    }),
+    {
+      name: STORAGE_KEY,
+      partialize: (state) => ({
+        threads: state.threads,
+        messages: state.messages,
+        typing: state.typing
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        state.messages = sortMessagesMap(state.messages);
+      }
+    }
+  )
+)
 

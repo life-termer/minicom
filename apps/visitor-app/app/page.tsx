@@ -105,7 +105,9 @@ export default function Home() {
             <Button variant="outline" size="sm">
               Sign in
             </Button>
-            <Button size="sm">Book a demo</Button>
+            <a href="/agent">
+              <Button size="sm">Try a demo</Button>
+            </a>
           </div>
         </header>
 
