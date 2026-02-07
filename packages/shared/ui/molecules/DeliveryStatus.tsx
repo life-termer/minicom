@@ -1,6 +1,6 @@
 import * as React from "react";
 
-type DeliveryStatusType = "sent" | "delivered" | "read";
+type DeliveryStatusType = "sending" | "sent" | "delivered" | "read" | "failed";
 
 type DeliveryStatusProps = {
   status: DeliveryStatusType;
@@ -8,15 +8,19 @@ type DeliveryStatusProps = {
 };
 
 const statusLabels: Record<DeliveryStatusType, string> = {
+  sending: "Sending…",
   sent: "Sent",
   delivered: "Delivered",
   read: "Read",
+  failed: "Failed",
 };
 
 const statusClasses: Record<DeliveryStatusType, string> = {
+  sending: "text-[var(--mc-text-muted)]",
   sent: "text-[var(--mc-text-muted)]",
   delivered: "text-[var(--mc-accent)]",
   read: "text-[var(--mc-success)]",
+  failed: "text-[var(--mc-danger)]",
 };
 
 export function DeliveryStatus({ status, className }: DeliveryStatusProps) {

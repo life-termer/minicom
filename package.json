@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/life-termer/minicom#readme",
   "dependencies": {
+    "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
     "zustand": "^5.0.11"
   }

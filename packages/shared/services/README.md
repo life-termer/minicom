@@ -6,6 +6,10 @@ Shared service helpers used across apps.
 
 Acknowledges message delivery by broadcasting a `MESSAGE_ACK` event.
 
+## bindRealtime
+
+Subscribes to realtime events and wires them into the chat store, returning an unsubscribe function.
+
 ## channel
 
 Defines the shared BroadcastChannel name (`minicom-chat`).
@@ -22,6 +26,10 @@ Defines the `ChatEvent` union used for realtime messaging:
 ## network
 
 `simulateNetwork` runs a function with a small chance to throw, to mimic flaky networks during testing.
+
+## sendMessage
+
+`sendMessageOptimistic` publishes a `MESSAGE_SEND` event so the UI can update immediately.
 
 ## realtime
 

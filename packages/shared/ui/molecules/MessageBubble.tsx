@@ -1,39 +1,46 @@
 import * as React from "react";
+import clsx from "clsx";
+import { Message } from "@minicom/shared";
+import { DeliveryStatus } from "./DeliveryStatus";
 
 type MessageBubbleProps = {
-  text?: string;
-  isOwn?: boolean;
+  message: Message;
+  isOwn: boolean;
   timestamp?: string;
-  status?: React.ReactNode;
   className?: string;
   children?: React.ReactNode;
 };
 
 export function MessageBubble({
-  text,
+  message,
   isOwn = false,
   timestamp,
-  status,
   className,
   children,
 }: MessageBubbleProps) {
   const align = isOwn ? "justify-end" : "justify-start";
   const bubble = isOwn
-    ? "bg-[var(--mc-ring)]  text-[var(--mc-text)] border border-[var(--mc-border)]"
-    : "bg-[var(--mc-bg-muted)] text-[var(--mc-text)] border border-[var(--mc-border)]";
+    ? "bg-[var(--mc-ring)]  text-[var(--mc-text)] border border-[var(--mc-border)] aria-label='Message from you'"
+    : "bg-[var(--mc-bg-muted)] text-[var(--mc-text)] border border-[var(--mc-border)]  aria-label='Message from other participant'";
 
   return (
     <div className={`flex ${align}`}>
       <div
-        className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm shadow-sm ${bubble} ${
+        className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm shadow-sm tabIndex={0} ${bubble} ${
           className ?? ""
         }`}
       >
-        {children ?? <p className="whitespace-pre-wrap">{text}</p>}
-        {(timestamp || status) && (
+        {children ?? <p className="whitespace-pre-wrap">{message.body}</p>}
+        {(timestamp) && (
           <div className="mt-1 flex items-center justify-end gap-2 text-[11px] 'text-[var(--foreground)]" >
             {timestamp && <span>{timestamp}</span>}
-            {status}
+            {isOwn && (
+            <span>
+              {message.status === "sending" && <DeliveryStatus status={message.status} />}
+              {message.status === "sent" && <DeliveryStatus status={message.status} />}
+              {message.status === "failed" && <DeliveryStatus status={message.status} />}
+            </span>
+          )}
           </div>
         )}
       </div>

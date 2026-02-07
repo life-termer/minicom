@@ -8,11 +8,14 @@ import {
   Badge,
   Button,
   ChatInput,
+  ChatWidget,
+  FloatingButton,
   MessageList,
   ThemeToggle,
   TypingIndicator,
   UnreadBadge,
 } from "../../../packages/shared/ui";
+import { bindRealtime } from "@minicom/shared";
 
 const messages = [
   {
@@ -55,7 +58,9 @@ export default function Home() {
       return;
     }
 
-    const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+    const prefersDark = window.matchMedia?.(
+      "(prefers-color-scheme: dark)",
+    ).matches;
     setIsDark(prefersDark);
   }, []);
 
@@ -64,6 +69,11 @@ export default function Home() {
     root.dataset.theme = isDark ? "dark" : "light";
     root.style.colorScheme = isDark ? "dark" : "light";
   }, [isDark]);
+
+  React.useEffect(() => {
+    const unsubscribe = bindRealtime();
+    return unsubscribe;
+  }, []);
 
   return (
     <div className="min-h-screen bg-[var(--mc-bg)] text-[var(--mc-text)]">
@@ -88,7 +98,10 @@ export default function Home() {
             <span>Security</span>
           </nav>
           <div className="flex items-center gap-3">
-            <ThemeToggle isDark={isDark} onToggle={() => setIsDark((prev) => !prev)} />
+            <ThemeToggle
+              isDark={isDark}
+              onToggle={() => setIsDark((prev) => !prev)}
+            />
             <Button variant="outline" size="sm">
               Sign in
             </Button>
@@ -149,12 +162,19 @@ export default function Home() {
             <div className="rounded-3xl border border-[var(--mc-border)] bg-[var(--mc-bg-secondary)] p-6 shadow-lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-[var(--mc-text-muted)]">Active agents</p>
+                  <p className="text-xs text-[var(--mc-text-muted)]">
+                    Active agents
+                  </p>
                   <p className="text-2xl font-semibold">6 online</p>
                 </div>
                 <div className="flex -space-x-2">
                   {avatars.map((src, index) => (
-                    <Avatar key={src} src={src} size="sm" className="ring-2 ring-white" />
+                    <Avatar
+                      key={src}
+                      src={src}
+                      size="sm"
+                      className="ring-2 ring-white"
+                    />
                   ))}
                 </div>
               </div>
@@ -196,7 +216,10 @@ export default function Home() {
         </main>
       </div>
 
-      <button
+      <FloatingButton onClick={() => setOpen((prev) => !prev)} />
+      {open && <ChatWidget isOpen={open} onClose={() => setOpen(false)} />}
+
+      {/* <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--mc-primary)] text-[var(--mc-primary-foreground)] shadow-xl transition hover:translate-y-[-2px]"
@@ -219,34 +242,34 @@ export default function Home() {
             <UnreadBadge count={2} />
           </span>
         </span>
-      </button>
+      </button> */}
 
-      {open && (
-        <div className="fixed bottom-24 right-6 z-40 w-[320px] overflow-hidden rounded-3xl border border-[var(--mc-border)] bg-[var(--mc-bg)] shadow-2xl">
-          <div className="flex items-center gap-3 border-b border-[var(--mc-border)] bg-[var(--mc-bg-muted)] px-4 py-3">
-            <Avatar
-              src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=200&auto=format&fit=crop"
-              size="md"
-            />
-            <div className="flex-1">
-              <p className="text-sm font-semibold">Avery · Support</p>
-              <p className="text-xs text-[var(--mc-text-muted)]">Online now</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="text-xs text-[var(--mc-text-muted)] hover:cursor-pointer hover:text-[var(--mc-text)]"
-            >
-              <X className="h-4 w-4" aria-hidden="true" />
-            </button>
-          </div>
-          <div className="max-h-[320px] space-y-3 overflow-y-auto px-4 py-4">
-            <MessageList messages={messages} ownSide="visitor" />
-            <TypingIndicator label="Avery is typing" />
-          </div>
-          <ChatInput onSend={() => undefined} />
-        </div>
-      )}
+      {
+        // (<div className="fixed bottom-24 right-6 z-40 w-[320px] overflow-hidden rounded-3xl border border-[var(--mc-border)] bg-[var(--mc-bg)] shadow-2xl">
+        //     <div className="flex items-center gap-3 border-b border-[var(--mc-border)] bg-[var(--mc-bg-muted)] px-4 py-3">
+        //       <Avatar
+        //         src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=200&auto=format&fit=crop"
+        //         size="md"
+        //       />
+        //       <div className="flex-1">
+        //         <p className="text-sm font-semibold">Avery · Support</p>
+        //         <p className="text-xs text-[var(--mc-text-muted)]">Online now</p>
+        //       </div>
+        //       <button
+        //         type="button"
+        //         onClick={() => setOpen(false)}
+        //         className="text-xs text-[var(--mc-text-muted)] hover:cursor-pointer hover:text-[var(--mc-text)]"
+        //       >
+        //         <X className="h-4 w-4" aria-hidden="true" />
+        //       </button>
+        //     </div>
+        //     <div className="max-h-[320px] space-y-3 overflow-y-auto px-4 py-4">
+        //       <MessageList messages={messages} ownSide="visitor" />
+        //       <TypingIndicator label="Avery is typing" />
+        //     </div>
+        //     <ChatInput onSend={() => undefined} />
+        //   </div>)
+      }
     </div>
   );
 }
