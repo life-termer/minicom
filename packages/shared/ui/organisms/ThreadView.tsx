@@ -16,34 +16,19 @@ export function ThreadView({ threadId }: { threadId?: string }) {
   const clearAll = useChatStore((s) => s.clearAll)
   const markRead = useChatStore((s) => s.markThreadRead)
 
+
+  useEffect(() => {
+    if (!threadId) return
+    markRead(threadId)
+  }, [threadId, markRead])
+
   if (!threadId) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-3 text-gray-400">
         <span>Select a conversation</span>
-        <Button size="sm" variant="outline" onClick={clearAll}>
-          Clear all threads
-        </Button>
       </div>
     )
   }
-
-  const send = (text: string) => {
-    const message = {
-      id: generateId(),
-      threadId,
-      senderId: 'agent',
-      body: text,
-      createdAt: Date.now(),
-      status: MessageStatus.SENDING
-    }
-
-    useChatStore.getState().addMessage(message)
-    sendMessageOptimistic(message)
-  }
-
-  useEffect(() => {
-    markRead(threadId)
-  }, [threadId, markRead])
 
   return (
     <div className="flex h-full flex-col">
