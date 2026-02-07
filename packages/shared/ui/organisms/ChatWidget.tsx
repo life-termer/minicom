@@ -11,6 +11,7 @@ import { Button } from "../atoms/Button";
 import { ChatWidgetHeader } from "../molecules/ChatWidgetHeader";
 import { MessageList } from "./MessageList";
 import { ChatInput } from "../molecules/ChatInput";
+import { TypingIndicator } from "../atoms/TypingIndicator";
 
 export function ChatWidget({
   isOpen,
@@ -38,6 +39,7 @@ export function ChatWidget({
   // Access the initThread action from the chat store to initialize a new thread when the widget is opened. This allows us to set up the necessary thread metadata in the store before any messages are sent. By centralizing thread initialization in the store, we ensure that all thread-related state is managed consistently and can be easily accessed by other components (like MessageList) that need to read thread data. This also simplifies our component logic, as we can rely on the store to handle all thread state management.
   const initThread = useChatStore((s) => s.initThread);
   const addMessage = useChatStore((s) => s.addMessage);
+  const markThreadReadByVisitor = useChatStore((s) => s.markThreadReadByVisitor);
 
   const createThread = () => {
     const id = generateId();
@@ -50,6 +52,7 @@ export function ChatWidget({
       ],
       lastMessageAt: Date.now(),
       unreadCountByAgent: 0,
+      unreadCountByVisitor: 0,
     };
     initThread(thread);
     sendEvent({ type: "THREAD_INIT", payload: thread });
@@ -75,23 +78,69 @@ export function ChatWidget({
     createThread();
   }, [isOpen, threadId, existingThreadId, initThread, addMessage]);
 
+
   if (!isOpen) return null;
 
   const messages = useChatStore(
     (s) => s.messages[threadId ?? ""] || emptyMessages,
   );
 
+  useEffect(() => {
+    if (!isOpen || !threadId) return;
+    if (messages.length === 0) return;
+    markThreadReadByVisitor(threadId);
+  }, [isOpen, threadId, messages.length, markThreadReadByVisitor]);
+
+  const isTyping = useChatStore((s) => {
+    if (!threadId) return false
+    for (const key in s.typing) {
+      const typing = s.typing[key]
+      if (
+        typing.threadId === threadId &&
+        typing.isTyping &&
+        typing.participantId !== "visitor"
+      ) {
+        return true
+      }
+    }
+    return false
+  })
+
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const typingRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!isTyping) return
+    const container = scrollRef.current
+    if (!container) return
+
+    const distanceFromBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight
+
+    if (distanceFromBottom <= 80) {
+      typingRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" })
+    }
+  }, [isTyping])
+
   return (
-    <div className="fixed bottom-24 right-6 z-40 w-[320px] overflow-hidden rounded-3xl border border-[var(--mc-border)] bg-[var(--mc-bg)] shadow-2xl">
+    <div className="fixed bottom-24 right-6 z-40 w-[calc(100%-3rem)] sm:w-[320px] overflow-hidden rounded-3xl border border-(--mc-border) bg-(--mc-bg) shadow-2xl">
       <ChatWidgetHeader onClose={onClose} />
-      <div className="flex items-center justify-between border-b border-[var(--mc-border)] px-4 py-2">
-        <p className="text-xs text-[var(--mc-text-muted)]">Testing tools</p>
+      <div className="flex items-center justify-between border-b border-(--mc-border) px-4 py-2">
+        <p className="text-xs text-(--mc-text-muted)">Testing tools</p>
         <Button size="sm" variant="outline" onClick={createThread}>
           New thread
         </Button>
       </div>
-      <div className="max-h-[320px] space-y-3 overflow-y-auto px-5 py-5">
+      <div
+        ref={scrollRef}
+        className="max-h-[320px] space-y-3 overflow-y-auto px-5 py-5"
+      >
         <MessageList messages={messages} currentUserId="visitor" />
+        {isTyping && (
+          <div ref={typingRef}>
+            <TypingIndicator label="Agent is typing..." />
+          </div>
+        )}
       </div>
       <ChatInput
         threadId={threadId}

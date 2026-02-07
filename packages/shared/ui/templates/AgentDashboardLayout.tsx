@@ -16,7 +16,7 @@ export function AgentDashboardLayout({
   className,
 }: AppLayoutProps) {
   const base =
-    "min-h-screen bg-[var(--mc-bg)] text-[var(--mc-text)] grid grid-cols-1 lg:grid-cols-[280px_1fr]";
+    "h-screen bg-[var(--mc-bg)] text-[var(--mc-text)] grid grid-cols-1 lg:grid-cols-[280px_1fr]";
   const classes = [base, className].filter(Boolean).join(" ");
 
   return (

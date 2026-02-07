@@ -1,44 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { X } from "lucide-react";
 
 import {
   Avatar,
   Badge,
   Button,
-  ChatInput,
   ChatWidget,
   FloatingButton,
-  MessageList,
   ThemeToggle,
-  TypingIndicator,
-  UnreadBadge,
 } from "../../../packages/shared/ui";
 import { bindRealtime } from "@minicom/shared";
 
-const messages = [
-  {
-    id: "m1",
-    text: "Hey! I am checking the pricing for the Growth plan.",
-    from: "visitor" as const,
-    time: "09:41",
-    status: "read" as const,
-  },
-  {
-    id: "m2",
-    text: "Happy to help. Want a quick walkthrough?",
-    from: "agent" as const,
-    time: "09:42",
-  },
-  {
-    id: "m3",
-    text: "Yes please. Also need SSO for the team.",
-    from: "visitor" as const,
-    time: "09:42",
-    status: "delivered" as const,
-  },
-];
 
 const avatars = [
   "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop",
@@ -76,11 +49,11 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[var(--mc-bg)] text-[var(--mc-text)]">
+    <div className="min-h-screen bg-(--mc-bg) text-(--mc-text)">
       <div className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,#dbeafe,transparent_55%)]" />
-        <header className="relative mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-          <div className="flex items-center gap-3">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,var(--mc-ring),transparent_60%)]" />
+        <header className="relative mx-auto flex flex-wrap gap-y-6 w-full max-w-6xl items-center sm:justify-between  px-6 py-6">
+          <div className="flex w-full md:w-auto items-center justify-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--mc-primary)] text-sm font-semibold text-[var(--mc-primary-foreground)]">
               MC
             </div>
@@ -91,13 +64,13 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <nav className="hidden items-center gap-6 text-sm text-[var(--mc-text-muted)] md:flex">
+          <nav className="hidden items-center gap-6 text-sm text-(--mc-text) md:flex">
             <span>Product</span>
             <span>Solutions</span>
             <span>Pricing</span>
             <span>Security</span>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-end gap-3 w-full md:w-auto">
             <ThemeToggle
               isDark={isDark}
               onToggle={() => setIsDark((prev) => !prev)}

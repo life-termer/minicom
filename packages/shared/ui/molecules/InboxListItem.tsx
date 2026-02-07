@@ -1,5 +1,5 @@
-import { Thread } from "@minicom/shared";
-import { UnreadBadge } from "./UnreadBadge";
+import { Thread, useChatStore } from "@minicom/shared";
+import { UnreadBadge } from "../atoms/UnreadBadge";
 
 export function InboxListItem({
   thread,
@@ -10,6 +10,13 @@ export function InboxListItem({
   active: boolean;
   onClick: () => void;
 }) {
+  const unreadCount = useChatStore((s) => {
+      let total = 0
+      for (const thread of Object.values(s.threads)) {
+        total += thread.unreadCountByAgent || 0
+      }
+      return total
+    })
   return (
     <button
       key={thread.id}
@@ -36,6 +43,7 @@ export function InboxListItem({
         <p className="line-clamp-1 text-xs text-[var(--mc-text-muted)]">
           {thread.lastMessageAt}
         </p>
+        <UnreadBadge count={unreadCount} />
         {/* {thread.status === "urgent" ? (
           <Badge variant="warning">Urgent</Badge>
         ) : (

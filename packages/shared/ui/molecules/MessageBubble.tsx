@@ -31,16 +31,14 @@ export function MessageBubble({
         }`}
       >
         {children ?? <p className="whitespace-pre-wrap">{message.body}</p>}
-        {(timestamp) && (
-          <div className="mt-1 flex items-center justify-end gap-2 text-[11px] 'text-[var(--foreground)]" >
+        {(timestamp || (isOwn && message.status)) && (
+          <div className="mt-1 flex items-center justify-end gap-2 text-[11px] text-[var(--foreground)]">
             {timestamp && <span>{timestamp}</span>}
-            {isOwn && (
-            <span>
-              {message.status === "sending" && <DeliveryStatus status={message.status} />}
-              {message.status === "sent" && <DeliveryStatus status={message.status} />}
-              {message.status === "failed" && <DeliveryStatus status={message.status} />}
-            </span>
-          )}
+            {isOwn && message.status && (
+              <span>
+                <DeliveryStatus status={message.status} />
+              </span>
+            )}
           </div>
         )}
       </div>

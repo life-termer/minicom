@@ -6,4 +6,5 @@ export type Thread = {
   participants: Participant[]
   lastMessageAt: number
   unreadCountByAgent: number //enables fast sorting.
+  unreadCountByVisitor: number // supports visitor unread badge.
 }

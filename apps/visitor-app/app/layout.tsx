@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Visitors APP",
+  title: "MiniCom | Live Chat Support Demo",
   description: "MiniCom - Live Chat Support Demo",
 };
 

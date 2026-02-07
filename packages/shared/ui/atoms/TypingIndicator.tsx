@@ -7,7 +7,7 @@ type TypingIndicatorProps = {
 
 export function TypingIndicator({ label = "Typing", className }: TypingIndicatorProps) {
   const base =
-    "inline-flex items-center gap-2 rounded-full border border-[var(--mc-border)] bg-[var(--mc-bg)] px-3 py-1 text-xs text-[var(--mc-text-muted)]";
+    "inline-flex items-center gap-2 w-[fit-content] rounded-full border border-[var(--mc-border)] bg-[var(--mc-bg)] px-3 py-1 text-xs text-[var(--mc-text-muted)]";
   const classes = [base, className].filter(Boolean).join(" ");
 
   return (

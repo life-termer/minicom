@@ -20,6 +20,7 @@ export type ChatActions = {
   failMessage: (messageId: string) => void // mark a message as FAILED
   setTyping: (typing: TypingState) => void // set typing state for a participant
   markThreadRead: (threadId: string) => void // reset unread count for agent
+  markThreadReadByVisitor: (threadId: string) => void // reset unread count for visitor
   clearAll: () => void // clear all threads/messages/typing (testing)
 }
 
@@ -47,7 +48,11 @@ export const useChatStore = create<ChatState & ChatActions>()(
     set((state) => ({
       threads: {
         ...state.threads,
-        [thread.id]: thread
+        [thread.id]: {
+          ...thread,
+          unreadCountByAgent: thread.unreadCountByAgent ?? 0,
+          unreadCountByVisitor: thread.unreadCountByVisitor ?? 0
+        }
       }
     })),
 
@@ -133,6 +138,18 @@ export const useChatStore = create<ChatState & ChatActions>()(
         }
       }
     })),
+
+  markThreadReadByVisitor: (threadId) =>
+    set((state) => ({
+      threads: {
+        ...state.threads,
+        [threadId]: {
+          ...state.threads[threadId],
+          unreadCountByVisitor: 0
+        }
+      }
+    })),
+    
 
   clearAll: () =>
     set(() => ({

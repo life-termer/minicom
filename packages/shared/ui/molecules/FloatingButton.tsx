@@ -1,6 +1,15 @@
-import { UnreadBadge } from "../molecules/UnreadBadge";
+import { useChatStore } from "@minicom/shared";
+import { UnreadBadge } from "../atoms/UnreadBadge";
 
 export function FloatingButton({ onClick }: { onClick: () => void }) {
+  const unreadCount = useChatStore((s) => {
+    let total = 0
+    for (const thread of Object.values(s.threads)) {
+      total += thread.unreadCountByVisitor || 0
+    }
+    return total
+  })
+
   return (
     <button
       aria-label="Open chat"
@@ -21,7 +30,7 @@ export function FloatingButton({ onClick }: { onClick: () => void }) {
             <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
           </svg>
           <span className="absolute -right-3 -top-3">
-            <UnreadBadge count={2} />
+            <UnreadBadge count={unreadCount} />
           </span>
         </span>
     </button>

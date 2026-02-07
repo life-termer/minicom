@@ -7,6 +7,7 @@ import { Message, MessageStatus, sendMessageOptimistic, useChatStore } from "@mi
 
 import { Button } from "../atoms/Button";
 import { Input } from "../atoms/Input";
+import { debouncedTyping } from "../../services/typing";
 
 type ChatInputProps = {
   threadId: string;
@@ -38,8 +39,31 @@ export function ChatInput({
 
     addMessage(message);
     sendMessageOptimistic(message);
+    debouncedTyping({
+      threadId,
+      authorId,
+      isTyping: false,
+    });
     setValue("");
   }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+
+    debouncedTyping({
+      threadId,
+      authorId,
+      isTyping: e.target.value.length > 0,
+    });
+  };
+
+  const handleBlur = () => {
+    debouncedTyping({
+      threadId,
+      authorId,
+      isTyping: false,
+    });
+  };
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -54,16 +78,17 @@ export function ChatInput({
   }
 
   const base =
-    "flex items-center gap-2 border-t border-[var(--mc-border)] bg-[var(--mc-bg)] px-3 py-2";
+    "flex items-center gap-2 border-t border-[var(--mc-border)] bg-[var(--mc-bg)] px-3 py-2 mt-auto";
   const classes = [base, className].filter(Boolean).join(" ");
 
   return (
     <form className={classes} onSubmit={handleSubmit}>
       <Input
         value={value}
-        onChange={(event) => setValue(event.target.value)}
+        onChange={handleChange}
         placeholder={placeholder}
         onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
         aria-label="Chat message"
       />
       <Button type="submit" size="sm" disabled={!value.trim()} aria-label="Send message">

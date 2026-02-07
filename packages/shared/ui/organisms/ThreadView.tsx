@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react'
-import { Message, MessageList, ChatInput, Button } from '@minicom/shared/ui'
+import { Message, MessageList, ChatInput, Button, TypingIndicator } from '@minicom/shared/ui'
 import { useChatStore } from '@minicom/shared'
 import { generateId } from '@minicom/shared'
 import { MessageStatus } from '@minicom/shared'
@@ -15,12 +15,14 @@ export function ThreadView({ threadId }: { threadId?: string }) {
 
   const clearAll = useChatStore((s) => s.clearAll)
   const markRead = useChatStore((s) => s.markThreadRead)
+  
 
 
   useEffect(() => {
     if (!threadId) return
+    if (messages.length === 0) return
     markRead(threadId)
-  }, [threadId, markRead])
+  }, [threadId, messages.length, markRead])
 
   if (!threadId) {
     return (
@@ -31,19 +33,21 @@ export function ThreadView({ threadId }: { threadId?: string }) {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-[calc(100%-60px)] flex-col">
       <div className="flex items-center justify-end border-b border-[var(--mc-border)] px-4 py-2">
         <Button size="sm" variant="outline" onClick={clearAll}>
           Clear all threads
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-6 px-10">
+      <div className="overflow-y-auto py-6 px-10">
         <MessageList
           messages={messages} 
           currentUserId="agent"
         />
       </div>
+
+     
 
       <ChatInput threadId={threadId} authorId="agent" placeholder="Reply…" />
     </div>
