@@ -7,6 +7,30 @@ export type BindRealtimeOptions = {
   currentUserId?: string
 }
 
+function playNotificationSound() {
+  if (typeof window === 'undefined') return
+  const AudioContext = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof window.AudioContext }).webkitAudioContext
+  if (!AudioContext) return
+
+  const context = new AudioContext()
+  const oscillator = context.createOscillator()
+  const gain = context.createGain()
+
+  oscillator.type = 'sine'
+  oscillator.frequency.value = 880
+  gain.gain.value = 0.08
+
+  oscillator.connect(gain)
+  gain.connect(context.destination)
+
+  oscillator.start()
+  oscillator.stop(context.currentTime + 0.12)
+
+  oscillator.onended = () => {
+    context.close()
+  }
+}
+
 // Binds real-time events to chat store updates. Centralized event handling promotes consistency across the app and simplifies debugging. Mirrors backend message protocols for seamless integration across the app. React-friendly subscription with cleanup ensures efficient resource management and prevents memory leaks.
 export function bindRealtime(options: BindRealtimeOptions = {}) {
   const { currentUserId } = options
@@ -27,6 +51,7 @@ export function bindRealtime(options: BindRealtimeOptions = {}) {
         store.addMessage(incomingMessage)
         if (isReceiver) {
           acknowledgeMessage(event.payload.id)
+          playNotificationSound()
         }
         break
       }
