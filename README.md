@@ -23,7 +23,7 @@ MiniCom is a live chat support demo with an agent inbox and a visitor widget. It
 
 ```
 visitor-app (ChatWidget) ──┐
-													 │  BroadcastChannel (minicom-chat)
+						    │  BroadcastChannel (minicom-chat)
 agent-app (Inbox/Thread) ──┘
 
 packages/shared
@@ -87,7 +87,7 @@ Example prompts I used:
 - “How should unread counts update without double counting?”
 - “How do I prevent a READ status from being overwritten by a later ACK?”
 
-I reviewed, adjusted, and simplified AI-generated ideas to fit my own understanding and the scope of this project. AI didn’t replace understanding — it helped me learn faster and try patterns I’m actively growing into. This project reflects both where I am today as a developer and my motivation to take on bigger challenges, learn from them, and keep improving.
+I reviewed, adjusted, and simplified AI-generated ideas to fit my own understanding and the scope of this project. It helped me learn faster and try patterns I’m actively growing into. This project reflects both my current skill set and my motivation to take on senior-level challenges, learn from them, and continue developing as an engineer if given the opportunity.
 
 ---
 

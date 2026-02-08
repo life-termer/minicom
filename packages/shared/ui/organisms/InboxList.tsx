@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useChatStore } from '@minicom/shared'
+import { sendReadReceipt, useChatStore } from '@minicom/shared'
 import { InboxListItem } from '../molecules/InboxListItem'
 
 export function InboxList({
@@ -48,6 +48,9 @@ export function InboxList({
 
   const handleSelect = (threadId: string) => {
     if (threadId !== activeThreadId) {
+      if ((threadMap[threadId]?.unreadCountByAgent ?? 0) > 0) {
+        sendReadReceipt(threadId, 'agent')
+      }
       markRead(threadId)
     }
     onSelect(threadId)

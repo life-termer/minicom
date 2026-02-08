@@ -67,10 +67,10 @@ export function ThreadView({ threadId }: { threadId?: string }) {
       </div>
 
      {isTyping && (
-               <div className='absolute bottom-16 left-6 z-50 w-[calc(100%-3rem)] sm:w-[320px] px-5 py-2'>
-                 <TypingIndicator label="Agent is typing..." />
-               </div>
-             )}
+        <div className='absolute bottom-16 left-6 z-50 w-[calc(100%-3rem)] sm:w-[320px] px-5 py-2'>
+          <TypingIndicator label="Visitor is typing..." />
+        </div>
+      )}
 
       <ChatInput
         key={threadId}
