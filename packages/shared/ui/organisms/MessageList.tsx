@@ -3,7 +3,8 @@
 import * as React from "react";
 
 import { MessageBubble } from "../molecules/MessageBubble";
-import { Message } from "@minicom/shared";
+import { Message, MessageStatus, sendMessageOptimistic } from "@minicom/shared";
+import { useChatStore } from "@minicom/shared/stores/chatStore";
 
 type MessageListProps = {
   messages: Message[];
@@ -13,6 +14,7 @@ type MessageListProps = {
 
 export function MessageList({ messages, currentUserId, className }: MessageListProps) {
   const endRef = React.useRef<HTMLDivElement>(null);
+  const updateMessageStatus = useChatStore((s) => s.updateMessageStatus);
   const base = "flex flex-col gap-5";
   const classes = [base, className].filter(Boolean).join(" ");
 
@@ -29,6 +31,13 @@ export function MessageList({ messages, currentUserId, className }: MessageListP
           message={message}
           isOwn={message.senderId === currentUserId}
           timestamp={new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          onRetry={(retryMessage) => {
+            updateMessageStatus(retryMessage.id, MessageStatus.SENT);
+            sendMessageOptimistic({
+              ...retryMessage,
+              status: MessageStatus.SENT
+            });
+          }}
         />
       ))}
       <div ref={endRef} />

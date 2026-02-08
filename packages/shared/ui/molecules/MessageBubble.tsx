@@ -1,7 +1,7 @@
 import * as React from "react";
 import clsx from "clsx";
 import { Message } from "@minicom/shared";
-import { DeliveryStatus } from "./DeliveryStatus";
+import { DeliveryStatus } from "../atoms/DeliveryStatus";
 
 type MessageBubbleProps = {
   message: Message;
@@ -9,6 +9,7 @@ type MessageBubbleProps = {
   timestamp?: string;
   className?: string;
   children?: React.ReactNode;
+  onRetry?: (message: Message) => void;
 };
 
 export function MessageBubble({
@@ -17,6 +18,7 @@ export function MessageBubble({
   timestamp,
   className,
   children,
+  onRetry,
 }: MessageBubbleProps) {
   const align = isOwn ? "justify-end" : "justify-start";
   const bubble = isOwn
@@ -38,6 +40,15 @@ export function MessageBubble({
               <span>
                 <DeliveryStatus status={message.status} />
               </span>
+            )}
+            {isOwn && message.status === "failed" && onRetry && (
+              <button
+                type="button"
+                className="text-[11px] text-[var(--mc-danger)] underline"
+                onClick={() => onRetry(message)}
+              >
+                Retry
+              </button>
             )}
           </div>
         )}

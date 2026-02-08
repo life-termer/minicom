@@ -5,7 +5,7 @@ import { AgentDashboardLayout } from "../../../packages/shared/ui/templates/Agen
 import DashboardHeader from "@minicom/shared/ui/molecules/DashboardHeader";
 import { InboxList } from "../../../packages/shared/ui/organisms/InboxList";
 import { ThreadView } from "../../../packages/shared/ui/organisms/ThreadView";
-import { bindRealtime } from "@minicom/shared";
+import { bindRealtime, sendPresence } from "@minicom/shared";
 import { Input } from "@minicom/shared/ui";
 
 type ThreadMessage = {
@@ -129,6 +129,29 @@ export default function Home() {
   React.useEffect(() => {
     const unsubscribe = bindRealtime({ currentUserId: "agent" });
     return unsubscribe;
+  }, []);
+
+  React.useEffect(() => {
+    sendPresence("agent", "online");
+
+    const handlePageHide = () => {
+      sendPresence("agent", "offline");
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        sendPresence("agent", "offline");
+      }
+    };
+
+    window.addEventListener("pagehide", handlePageHide);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("pagehide", handlePageHide);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      sendPresence("agent", "offline");
+    };
   }, []);
   React.useEffect(() => {
     const root = document.documentElement;

@@ -17,6 +17,7 @@ export type ChatActions = {
   initThread: (thread: Thread) => void // add or replace a thread in state
   addMessage: (message: Message) => void // add a message and update thread metadata
   acknowledgeMessage: (messageId: string) => void // mark a message as DELIVERED
+  updateMessageStatus: (messageId: string, status: MessageStatus) => void // update status for retry flow
   applyReadReceipt: (threadId: string, readerId: string) => void // mark messages as READ for sender
   failMessage: (messageId: string) => void // mark a message as FAILED
   setTyping: (typing: TypingState) => void // set typing state for a participant
@@ -119,6 +120,22 @@ export const useChatStore = create<ChatState & ChatActions>()(
         updatedMessages[threadId] = state.messages[threadId].map((m) =>
           m.id === messageId
             ? { ...m, status: MessageStatus.FAILED }
+            : m
+        )
+      }
+
+      return { messages: updatedMessages }
+    }),
+
+  // Update message status across all threads. Used for retry flow without duplicating messages.
+  updateMessageStatus: (messageId, status) =>
+    set((state) => {
+      const updatedMessages: ChatState['messages'] = {}
+
+      for (const threadId in state.messages) {
+        updatedMessages[threadId] = state.messages[threadId].map((m) =>
+          m.id === messageId
+            ? { ...m, status }
             : m
         )
       }

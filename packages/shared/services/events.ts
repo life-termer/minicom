@@ -5,5 +5,6 @@ export type ChatEvent =
   | { type: 'MESSAGE_SEND'; payload: Message }
   | { type: 'MESSAGE_ACK'; payload: { messageId: string } }
   | { type: 'MESSAGE_READ'; payload: { threadId: string; readerId: string } }
+  | { type: 'PRESENCE'; payload: { participantId: string; status: 'online' | 'offline' } }
   | { type: 'TYPING'; payload: TypingState }
   | { type: 'THREAD_INIT'; payload: Thread }

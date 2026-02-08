@@ -89,10 +89,9 @@ export function ChatWidget({
     createThread();
   }, [isOpen, threadId, existingThreadId, initThread, addMessage]);
 
-  // In development mode, read a URL param to determine whether to throw an error for testing the ErrorBoundary. ?throwError=1 or ?throwWidgetError=true will trigger the error when the widget is opened.
+  // Read a URL param to determine whether to throw an error for testing the ErrorBoundary. ?throwError=1 or ?throwWidgetError=true will trigger the error when the widget is opened.
   useEffect(() => {
     if (!isOpen) return;
-    if (process.env.NODE_ENV !== "development") return;
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const flag = params.get("throwError") || params.get("throwWidgetError");

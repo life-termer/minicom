@@ -7,11 +7,11 @@ export * from "./atoms/ErrorBoundary";
 export * from "./atoms/Spinner";
 export * from "./atoms/ThemeToggle";
 export * from "./atoms/UnreadBadge";
+export * from "./atoms/DeliveryStatus";
+export * from "./atoms/TypingIndicator";
 
 export * from "./molecules/FloatingButton";
 export * from "./molecules/MessageBubble";
-export * from "./atoms/TypingIndicator";
-export * from "./molecules/DeliveryStatus";
 export * from "./molecules/ErrorPanel";
 
 export * from "./organisms/MessageList";

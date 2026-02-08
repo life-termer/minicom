@@ -26,6 +26,7 @@ export function ChatInput({
   const [value, setValue] = React.useState("");
 
   const addMessage = useChatStore((s) => s.addMessage);
+  const failMessage = useChatStore((s) => s.failMessage);
 
   function handleSend() {
     if (!value.trim()) return;
@@ -41,6 +42,15 @@ export function ChatInput({
 
     addMessage(message);
     sendMessageOptimistic(message);
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const fail = params.get("failMessage");
+      if (fail === "1" || fail === "true") {
+        window.setTimeout(() => {
+          failMessage(message.id);
+        }, 300);
+      }
+    }
     debouncedTyping({
       threadId,
       authorId,
