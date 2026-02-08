@@ -8,11 +8,20 @@ import {
   sendEvent,
   sendReadReceipt,
 } from "@minicom/shared";
+import { ErrorBoundary } from "../atoms/ErrorBoundary";
 import { Button } from "../atoms/Button";
 import { ChatWidgetHeader } from "../molecules/ChatWidgetHeader";
+import { ErrorPanel } from "../molecules/ErrorPanel";
 import { MessageList } from "./MessageList";
 import { ChatInput } from "../molecules/ChatInput";
 import { TypingIndicator } from "../atoms/TypingIndicator";
+
+function DevErrorThrower({ shouldThrow }: { shouldThrow: boolean }) {
+  if (shouldThrow) {
+    throw new Error("Simulated ChatWidget error");
+  }
+  return null;
+}
 
 export function ChatWidget({
   isOpen,
@@ -21,7 +30,8 @@ export function ChatWidget({
   isOpen: boolean;
   onClose: () => void;
 }) {
- 
+  const [shouldThrowError, setShouldThrowError] = useState(false);
+  const [errorResetKey, setErrorResetKey] = useState(0);
   const [threadId, setThreadId] = useState<string>("");
   const hasInitializedRef = useRef(false);
   const emptyMessages = useMemo<Message[]>(() => [], []);
@@ -79,6 +89,16 @@ export function ChatWidget({
     createThread();
   }, [isOpen, threadId, existingThreadId, initThread, addMessage]);
 
+  // In development mode, read a URL param to determine whether to throw an error for testing the ErrorBoundary. ?throwError=1 or ?throwWidgetError=true will trigger the error when the widget is opened.
+  useEffect(() => {
+    if (!isOpen) return;
+    if (process.env.NODE_ENV !== "development") return;
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const flag = params.get("throwError") || params.get("throwWidgetError");
+    setShouldThrowError(flag === "1" || flag === "true");
+  }, [isOpen]);
+
 
   if (!isOpen) return null;
 
@@ -134,30 +154,45 @@ export function ChatWidget({
   }, [isTyping])
 
   return (
-    <div className="fixed bottom-24 right-6 z-40 w-[calc(100%-3rem)] sm:w-[320px] overflow-hidden rounded-3xl border border-(--mc-border) bg-(--mc-bg) shadow-2xl">
-      <ChatWidgetHeader onClose={onClose} />
-      <div className="flex items-center justify-between border-b border-(--mc-border) px-4 py-2">
-        <p className="text-xs text-(--mc-text-muted)">Testing tools</p>
-        <Button size="sm" variant="outline" onClick={createThread}>
-          New thread
-        </Button>
+    <ErrorBoundary
+      resetKey={errorResetKey}
+      onReset={() => setShouldThrowError(false)}
+      fallback={({ reset }) => (
+        <ErrorPanel
+          className="fixed bottom-24 right-6 z-40 w-[calc(100%-3rem)] sm:w-[320px]"
+          onAction={() => {
+            setErrorResetKey((prev) => prev + 1);
+            reset();
+          }}
+        />
+      )}
+    >
+      <DevErrorThrower shouldThrow={shouldThrowError} />
+      <div className="fixed bottom-24 right-6 z-40 w-[calc(100%-3rem)] sm:w-[320px] overflow-hidden rounded-3xl border border-(--mc-border) bg-(--mc-bg) shadow-2xl">
+        <ChatWidgetHeader onClose={onClose} />
+        <div className="flex items-center justify-between border-b border-(--mc-border) px-4 py-2">
+          <p className="text-xs text-(--mc-text-muted)">Testing tools</p>
+          <Button size="sm" variant="outline" onClick={createThread}>
+            New thread
+          </Button>
+        </div>
+        <div
+          ref={scrollRef}
+          className="max-h-[320px] space-y-3 overflow-y-auto px-5 py-5"
+        >
+          <MessageList messages={messages} currentUserId="visitor" />
+          {isTyping && (
+            <div ref={typingRef}>
+              <TypingIndicator label="Agent is typing..." />
+            </div>
+          )}
+        </div>
+        <ChatInput
+          threadId={threadId}
+          authorId="visitor"
+          placeholder="Type a message…"
+        />
       </div>
-      <div
-        ref={scrollRef}
-        className="max-h-[320px] space-y-3 overflow-y-auto px-5 py-5"
-      >
-        <MessageList messages={messages} currentUserId="visitor" />
-        {isTyping && (
-          <div ref={typingRef}>
-            <TypingIndicator label="Agent is typing..." />
-          </div>
-        )}
-      </div>
-      <ChatInput
-        threadId={threadId}
-        authorId="visitor"
-        placeholder="Type a message…"
-      />
-    </div>
+    </ErrorBoundary>
   );
 }

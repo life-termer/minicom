@@ -4,6 +4,7 @@ import { UnreadBadge } from "../atoms/UnreadBadge";
 
 type InboxListItemProps = {
   thread: Thread;
+  lastMessage?: string;
   active: boolean;
   onClick: () => void;
   onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
@@ -12,7 +13,7 @@ type InboxListItemProps = {
 };
 
 export const InboxListItem = React.forwardRef<HTMLButtonElement, InboxListItemProps>(
-  ({ thread, active, onClick, onKeyDown, onFocus, tabIndex }, ref) => {
+  ({ thread, lastMessage, active, onClick, onKeyDown, onFocus, tabIndex }, ref) => {
     return (
       <button
         ref={ref}
@@ -42,9 +43,19 @@ export const InboxListItem = React.forwardRef<HTMLButtonElement, InboxListItemPr
         </div>
       </div>
       <div className="mt-2 flex items-center justify-between gap-2">
-        <p className="line-clamp-1 text-xs text-[var(--mc-text-muted)]">
-          {new Date(thread.lastMessageAt).toLocaleTimeString([], { year: "numeric",
-  month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+        <div className="min-w-0">
+          <p className="line-clamp-1 text-xs text-[var(--mc-text-muted)]">
+            {lastMessage ?? "No messages yet"}
+          </p>
+        </div>
+        <p className="whitespace-nowrap text-[10px] text-[var(--mc-text-muted)]">
+          {new Date(thread.lastMessageAt).toLocaleTimeString([], {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+          })}
         </p>
         {/* {thread.status === "urgent" ? (
           <Badge variant="warning">Urgent</Badge>

@@ -10,6 +10,7 @@ export function InboxList({
   onSelect: (id: string) => void
 }) {
   const threadMap = useChatStore((s) => s.threads)
+  const messageMap = useChatStore((s) => s.messages)
   const markRead = useChatStore((s) => s.markThreadRead)
   const [focusedIndex, setFocusedIndex] = useState(0)
   const itemRefs = useRef<Array<HTMLButtonElement | null>>([])
@@ -21,6 +22,19 @@ export function InboxList({
       return b.lastMessageAt - a.lastMessageAt
     })
   }, [threadMap])
+
+  const lastMessagePreview = useMemo(() => {
+    const previewMap: Record<string, string> = {}
+    for (const thread of threads) {
+      const messages = messageMap[thread.id]
+      if (messages && messages.length > 0) {
+        previewMap[thread.id] = messages[messages.length - 1].body
+      } else {
+        previewMap[thread.id] = "No messages yet"
+      }
+    }
+    return previewMap
+  }, [messageMap, threads])
 
   useEffect(() => {
     const activeIndex = threads.findIndex((thread) => thread.id === activeThreadId)
@@ -88,6 +102,7 @@ export function InboxList({
         <InboxListItem
           key={thread.id}
           thread={thread}
+          lastMessage={lastMessagePreview[thread.id]}
           active={thread.id === activeThreadId}
           tabIndex={index === focusedIndex ? 0 : -1}
           onFocus={() => setFocusedIndex(index)}
