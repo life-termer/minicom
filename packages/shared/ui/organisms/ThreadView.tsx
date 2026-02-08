@@ -59,7 +59,7 @@ export function ThreadView({ threadId }: { threadId?: string }) {
         </Button>
       </div>
 
-      <div className="overflow-y-auto py-6 px-10">
+      <div className="h-[calc(100%-110px)]">
         <MessageList
           messages={messages} 
           currentUserId="agent"

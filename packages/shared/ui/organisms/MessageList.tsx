@@ -12,11 +12,37 @@ type MessageListProps = {
   className?: string;
 };
 
+const PAGE_SIZE = 20;
+
 export function MessageList({ messages, currentUserId, className }: MessageListProps) {
   const endRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
   const updateMessageStatus = useChatStore((s) => s.updateMessageStatus);
   const base = "flex flex-col gap-5";
   const classes = [base, className].filter(Boolean).join(" ");
+  const [visibleCount, setVisibleCount] = React.useState(PAGE_SIZE);
+
+  const visibleMessages = messages.slice(-visibleCount);
+
+  // Auto-scroll only when new messages arrive at the bottom
+  // React.useEffect(() => {
+  //   const el = containerRef.current;
+  //   if (!el) return;
+
+  //   el.scrollTop = el.scrollHeight;
+  // }, [messages.length]);
+
+  function handleScroll() {
+    const el = containerRef.current;
+    if (!el) return;
+
+    if (el.scrollTop === 0 && visibleCount < messages.length) {
+      setVisibleCount((count) =>
+        Math.min(count + PAGE_SIZE, messages.length)
+      );
+    }
+    console.log(visibleMessages.length);
+  }
 
   // Auto-scroll on new message
   React.useEffect(() => {
@@ -24,8 +50,9 @@ export function MessageList({ messages, currentUserId, className }: MessageListP
   }, [messages.length]);
 
   return (
-    <div className={classes} role="list" aria-live="polite">
-      {messages.map((message) => (
+    <div ref={containerRef} className="h-full overflow-y-auto space-y-3 px-5 py-5" onScroll={handleScroll} >
+    <div className={classes} role="list" aria-live="polite" >
+      {visibleMessages.map((message) => (
         <MessageBubble
           key={message.id}
           message={message}
@@ -41,6 +68,7 @@ export function MessageList({ messages, currentUserId, className }: MessageListP
         />
       ))}
       <div ref={endRef} />
+    </div>
     </div>
   );
 }

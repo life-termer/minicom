@@ -175,13 +175,10 @@ export function ChatWidget({
             New thread
           </Button>
         </div>
-        <div
-          ref={scrollRef}
-          className="max-h-[320px] space-y-3 overflow-y-auto px-5 py-5"
-        >
-          <MessageList messages={messages} currentUserId="visitor" />
+        <div ref={scrollRef} className="h-[320px] relative">
+          <MessageList messages={messages} currentUserId="visitor"  />
           {isTyping && (
-            <div ref={typingRef}>
+            <div ref={typingRef} className="absolute bottom-2 left-5">
               <TypingIndicator label="Agent is typing..." />
             </div>
           )}
