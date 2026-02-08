@@ -80,16 +80,16 @@ export default function Home() {
               onChange={(event) => setQuery(event.target.value)}
               aria-label="Search conversations"
             />
-            <div className="flex items-center justify-between text-xs text-[var(--mc-text-muted)]">
+            <div className="flex items-center justify-between text-xs text-(--mc-text-muted)">
               <span>Sort by</span>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setSortMode("recent")}
-                  className={`rounded-full px-2 py-1 ${
+                  className={`rounded-full px-3 py-1 ${
                     sortMode === "recent"
-                      ? "bg-[var(--mc-primary)] text-[var(--mc-primary-foreground)]"
-                      : "text-[var(--mc-text-muted)]"
+                      ? "bg-(--mc-primary) text-(--mc-primary-foreground)"
+                      : "text-(--mc-text-muted)"
                   }`}
                 >
                   Recent
@@ -97,10 +97,10 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setSortMode("unread")}
-                  className={`rounded-full px-2 py-1 ${
+                  className={`rounded-full px-3 py-1 ${
                     sortMode === "unread"
-                      ? "bg-[var(--mc-primary)] text-[var(--mc-primary-foreground)]"
-                      : "text-[var(--mc-text-muted)]"
+                      ? "bg-(--mc-primary) text-(--mc-primary-foreground)"
+                      : "text-(--mc-text-muted)"
                   }`}
                 >
                   Unread

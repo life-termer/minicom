@@ -53,7 +53,7 @@ export function ThreadView({ threadId }: { threadId?: string }) {
 
   return (
     <div className="flex relative h-[calc(100%-60px)] flex-col">
-      <div className="flex items-center justify-end border-b border-[var(--mc-border)] px-4 py-2">
+      <div className="flex items-center justify-end border-b border-(--mc-border) px-4 py-2">
         <Button size="sm" variant="outline" onClick={clearAll}>
           Clear all threads
         </Button>

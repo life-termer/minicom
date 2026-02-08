@@ -22,17 +22,16 @@ export function AgentDashboardLayout({
   return (
     <div className={classes}>
       {sidebar && (
-        <aside className="hidden lg:flex flex-col border-r border-[var(--mc-border)] bg-[var(--mc-bg-muted)]">
+        <aside className="hidden lg:flex flex-col border-r border-(--mc-border) bg-(--mc-bg-muted)">
           {sidebar}
         </aside>
       )}
       <section className="flex min-h-screen flex-col">
         {header && (
-          <header className="border-b border-[var(--mc-border)] bg-[var(--mc-bg)] px-4 py-3">
+          <header className="border-b border-(--mc-border) bg-(--mc-bg) px-4 py-3">
             {header}
           </header>
         )}
-        {/* <main className="flex-1 overflow-y-auto px-4 py-4">{children}</main> */}
         {content}
       </section>
     </div>

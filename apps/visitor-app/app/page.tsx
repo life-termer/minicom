@@ -54,12 +54,12 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,var(--mc-ring),transparent_60%)]" />
         <header className="relative mx-auto flex flex-wrap gap-y-6 w-full max-w-6xl items-center sm:justify-between  px-6 py-6">
           <div className="flex w-full md:w-auto items-center justify-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--mc-primary)] text-sm font-semibold text-[var(--mc-primary-foreground)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-(--mc-primary) text-sm font-semibold text-(--mc-primary-foreground)">
               MC
             </div>
             <div>
               <p className="text-sm font-semibold">MiniCom</p>
-              <p className="text-xs text-[var(--mc-text-muted)]">
+              <p className="text-xs text-(--mc-text-muted)">
                 Real-time customer support
               </p>
             </div>
@@ -88,7 +88,7 @@ export default function Home() {
           <section className="flex flex-col gap-8">
             <div className="flex flex-wrap items-center gap-3">
               <Badge variant="primary">New</Badge>
-              <span className="text-sm text-[var(--mc-text-muted)]">
+              <span className="text-sm text-(--mc-text-muted)">
                 Launching shared inbox + AI summaries
               </span>
             </div>
@@ -96,7 +96,7 @@ export default function Home() {
               <h1 className="text-4xl font-semibold leading-tight md:text-5xl">
                 Support that feels like a real-time conversation.
               </h1>
-              <p className="max-w-xl text-base text-[var(--mc-text-muted)]">
+              <p className="max-w-xl text-base text-(--mc-text-muted)">
                 MiniCom helps teams respond faster with smart routing,
                 lightweight automations, and an interface your customers love.
               </p>
@@ -122,10 +122,10 @@ export default function Home() {
               ].map((item) => (
                 <div
                   key={item.title}
-                  className="rounded-2xl border border-[var(--mc-border)] bg-[var(--mc-bg-secondary)] p-4 shadow-sm"
+                  className="rounded-2xl border border-(--mc-border) bg-(--mc-bg-secondary) p-4 shadow-sm"
                 >
                   <p className="text-sm font-semibold">{item.title}</p>
-                  <p className="mt-2 text-xs text-[var(--mc-text-muted)]">
+                  <p className="mt-2 text-xs text-(--mc-text-muted)">
                     {item.body}
                   </p>
                 </div>
@@ -134,16 +134,16 @@ export default function Home() {
           </section>
 
           <section className="flex flex-col gap-6">
-            <div className="rounded-3xl border border-[var(--mc-border)] bg-[var(--mc-bg-secondary)] p-6 shadow-lg">
+            <div className="rounded-3xl border border-(--mc-border) bg-(--mc-bg-secondary) p-6 shadow-lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-[var(--mc-text-muted)]">
+                  <p className="text-xs text-(--mc-text-muted)">
                     Active agents
                   </p>
                   <p className="text-2xl font-semibold">6 online</p>
                 </div>
                 <div className="flex -space-x-2">
-                  {avatars.map((src, index) => (
+                  {avatars.map((src) => (
                     <Avatar
                       key={src}
                       src={src}
@@ -157,11 +157,11 @@ export default function Home() {
                 {["Billing", "Onboarding", "API Support"].map((label) => (
                   <div
                     key={label}
-                    className="flex items-center justify-between rounded-2xl border border-[var(--mc-border)] bg-[var(--mc-bg)] px-4 py-3"
+                    className="flex items-center justify-between rounded-2xl border border-(--mc-border) bg-(--mc-bg) px-4 py-3"
                   >
                     <div>
                       <p className="text-sm font-semibold">{label}</p>
-                      <p className="text-xs text-[var(--mc-text-muted)]">
+                      <p className="text-xs text-(--mc-text-muted)">
                         Avg. response 2m
                       </p>
                     </div>
@@ -171,17 +171,17 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-[var(--mc-border)] bg-[var(--mc-bg-secondary)] p-6 shadow-sm">
+            <div className="rounded-3xl border border-(--mc-border) bg-(--mc-bg-secondary) p-6 shadow-sm">
               <p className="text-sm font-semibold">Trusted by teams</p>
-              <p className="mt-3 text-xs text-[var(--mc-text-muted)]">
-                "MiniCom helped us cut response times by 41% while keeping the
-                tone personal."
+              <p className="mt-3 text-xs text-(--mc-text-muted)">
+                &ldquo;MiniCom helped us cut response times by 41% while keeping the
+                tone personal.&rdquo;
               </p>
               <div className="mt-4 flex items-center gap-3">
                 <Avatar fallback="AL" size="sm" />
                 <div>
                   <p className="text-xs font-semibold">Amara Lane</p>
-                  <p className="text-[11px] text-[var(--mc-text-muted)]">
+                  <p className="text-[11px] text-(--mc-text-muted)">
                     Support Lead, Citylane
                   </p>
                 </div>

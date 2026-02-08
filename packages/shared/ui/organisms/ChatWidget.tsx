@@ -175,7 +175,7 @@ export function ChatWidget({
             New thread
           </Button>
         </div>
-        <div ref={scrollRef} className="h-[320px] relative">
+        <div ref={scrollRef} className="h-80 relative">
           <MessageList messages={messages} currentUserId="visitor"  />
           {isTyping && (
             <div ref={typingRef} className="absolute bottom-2 left-5">

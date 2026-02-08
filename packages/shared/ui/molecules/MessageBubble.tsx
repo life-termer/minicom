@@ -34,7 +34,7 @@ export function MessageBubble({
       >
         {children ?? <p className="whitespace-pre-wrap">{message.body}</p>}
         {(timestamp || (isOwn && message.status)) && (
-          <div className="mt-1 flex items-center justify-end gap-2 text-[11px] text-[var(--foreground)]">
+          <div className="mt-1 flex items-center justify-end gap-2 text-[11px] text-foreground">
             {timestamp && <span>{timestamp}</span>}
             {isOwn && message.status && (
               <span>
@@ -44,7 +44,7 @@ export function MessageBubble({
             {isOwn && message.status === "failed" && onRetry && (
               <button
                 type="button"
-                className="text-[11px] text-[var(--mc-danger)] underline"
+                className="text-[11px] text-(--mc-danger) underline"
                 onClick={() => onRetry(message)}
               >
                 Retry
