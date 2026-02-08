@@ -14,12 +14,14 @@ type ChatInputProps = {
   authorId: string;
   placeholder?: string;
   className?: string;
+  autoFocus?: boolean;
 };
 
 export function ChatInput({
   threadId, authorId,
   placeholder = "Type a message...",
   className,
+  autoFocus,
 }: ChatInputProps) {
   const [value, setValue] = React.useState("");
 
@@ -89,6 +91,7 @@ export function ChatInput({
         placeholder={placeholder}
         onKeyDown={handleKeyDown}
         onBlur={handleBlur}
+        autoFocus={autoFocus}
         aria-label="Chat message"
       />
       <Button type="submit" size="sm" disabled={!value.trim()} aria-label="Send message">

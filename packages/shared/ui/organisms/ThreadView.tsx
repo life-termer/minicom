@@ -72,7 +72,13 @@ export function ThreadView({ threadId }: { threadId?: string }) {
                </div>
              )}
 
-      <ChatInput threadId={threadId} authorId="agent" placeholder="Reply…" />
+      <ChatInput
+        key={threadId}
+        threadId={threadId}
+        authorId="agent"
+        placeholder="Reply…"
+        autoFocus
+      />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useChatStore } from '@minicom/shared'
 import { InboxListItem } from '../molecules/InboxListItem'
 
@@ -11,6 +11,8 @@ export function InboxList({
 }) {
   const threadMap = useChatStore((s) => s.threads)
   const markRead = useChatStore((s) => s.markThreadRead)
+  const [focusedIndex, setFocusedIndex] = useState(0)
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([])
   const threads = useMemo(() => {
     return Object.values(threadMap).sort((a, b) => {
       if (a.unreadCountByAgent !== b.unreadCountByAgent) {
@@ -20,6 +22,16 @@ export function InboxList({
     })
   }, [threadMap])
 
+  useEffect(() => {
+    const activeIndex = threads.findIndex((thread) => thread.id === activeThreadId)
+    const nextIndex = activeIndex >= 0 ? activeIndex : 0
+    setFocusedIndex(nextIndex)
+  }, [activeThreadId, threads])
+
+  useEffect(() => {
+    itemRefs.current[focusedIndex]?.focus()
+  }, [focusedIndex, threads.length])
+
   const handleSelect = (threadId: string) => {
     if (threadId !== activeThreadId) {
       markRead(threadId)
@@ -27,14 +39,63 @@ export function InboxList({
     onSelect(threadId)
   }
 
+  const handleClick = (threadId: string, index: number) => {
+    setFocusedIndex(index)
+    itemRefs.current[index]?.focus()
+    handleSelect(threadId)
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (threads.length === 0) return
+    switch (event.key) {
+      case 'ArrowDown': {
+        event.preventDefault()
+        const nextIndex = Math.min(focusedIndex + 1, threads.length - 1)
+        setFocusedIndex(nextIndex)
+        break
+      }
+      case 'ArrowUp': {
+        event.preventDefault()
+        const nextIndex = Math.max(focusedIndex - 1, 0)
+        setFocusedIndex(nextIndex)
+        break
+      }
+      case 'Home': {
+        event.preventDefault()
+        setFocusedIndex(0)
+        break
+      }
+      case 'End': {
+        event.preventDefault()
+        setFocusedIndex(threads.length - 1)
+        break
+      }
+      case 'Enter':
+      case ' ': {
+        event.preventDefault()
+        const thread = threads[focusedIndex]
+        if (thread) {
+          handleSelect(thread.id)
+        }
+        break
+      }
+    }
+  }
+
   return (
-    <div className="flex-1 space-y-3 overflow-y-auto">
-      {threads.map((thread) => (
+    <div className="flex-1 space-y-3 overflow-y-auto" role="listbox" aria-label="Inbox threads">
+      {threads.map((thread, index) => (
         <InboxListItem
           key={thread.id}
           thread={thread}
           active={thread.id === activeThreadId}
-          onClick={() => handleSelect(thread.id)}
+          tabIndex={index === focusedIndex ? 0 : -1}
+          onFocus={() => setFocusedIndex(index)}
+          onKeyDown={handleKeyDown}
+          onClick={() => handleClick(thread.id, index)}
+          ref={(el) => {
+            itemRefs.current[index] = el
+          }}
         />
       ))}
     </div>
