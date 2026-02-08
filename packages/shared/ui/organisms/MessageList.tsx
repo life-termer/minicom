@@ -24,14 +24,6 @@ export function MessageList({ messages, currentUserId, className }: MessageListP
 
   const visibleMessages = messages.slice(-visibleCount);
 
-  // Auto-scroll only when new messages arrive at the bottom
-  // React.useEffect(() => {
-  //   const el = containerRef.current;
-  //   if (!el) return;
-
-  //   el.scrollTop = el.scrollHeight;
-  // }, [messages.length]);
-
   function handleScroll() {
     const el = containerRef.current;
     if (!el) return;
@@ -41,7 +33,6 @@ export function MessageList({ messages, currentUserId, className }: MessageListP
         Math.min(count + PAGE_SIZE, messages.length)
       );
     }
-    console.log(visibleMessages.length);
   }
 
   // Auto-scroll on new message
