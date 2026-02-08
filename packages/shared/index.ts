@@ -11,6 +11,7 @@ export * from './services/bindRealtime'
 export * from './services/channel'
 export * from './services/events'
 export * from './services/network'
+export * from './services/read'
 export * from './services/realtime'
 export * from './services/sendMessage'
 

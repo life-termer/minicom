@@ -34,7 +34,7 @@ export function ChatInput({
       senderId: authorId,
       body: value.trim(),
       createdAt: Date.now(),
-      status: MessageStatus.SENDING,
+      status: MessageStatus.SENT,
     };
 
     addMessage(message);

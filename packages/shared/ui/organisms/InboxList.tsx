@@ -10,6 +10,7 @@ export function InboxList({
   onSelect: (id: string) => void
 }) {
   const threadMap = useChatStore((s) => s.threads)
+  const markRead = useChatStore((s) => s.markThreadRead)
   const threads = useMemo(() => {
     return Object.values(threadMap).sort((a, b) => {
       if (a.unreadCountByAgent !== b.unreadCountByAgent) {
@@ -19,6 +20,13 @@ export function InboxList({
     })
   }, [threadMap])
 
+  const handleSelect = (threadId: string) => {
+    if (threadId !== activeThreadId) {
+      markRead(threadId)
+    }
+    onSelect(threadId)
+  }
+
   return (
     <div className="flex-1 space-y-3 overflow-y-auto">
       {threads.map((thread) => (
@@ -26,7 +34,7 @@ export function InboxList({
           key={thread.id}
           thread={thread}
           active={thread.id === activeThreadId}
-          onClick={() => onSelect(thread.id)}
+          onClick={() => handleSelect(thread.id)}
         />
       ))}
     </div>

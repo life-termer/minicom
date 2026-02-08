@@ -127,7 +127,7 @@ export default function Home() {
   const [query, setQuery] = React.useState("");
   const [isDark, setIsDark] = React.useState(false);
   React.useEffect(() => {
-    const unsubscribe = bindRealtime();
+    const unsubscribe = bindRealtime({ currentUserId: "agent" });
     return unsubscribe;
   }, []);
   React.useEffect(() => {

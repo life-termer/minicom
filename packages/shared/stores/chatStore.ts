@@ -16,7 +16,8 @@ export type ChatState = {
 export type ChatActions = {
   initThread: (thread: Thread) => void // add or replace a thread in state
   addMessage: (message: Message) => void // add a message and update thread metadata
-  acknowledgeMessage: (messageId: string) => void // mark a message as SENT
+  acknowledgeMessage: (messageId: string) => void // mark a message as DELIVERED
+  applyReadReceipt: (threadId: string, readerId: string) => void // mark messages as READ for sender
   failMessage: (messageId: string) => void // mark a message as FAILED
   setTyping: (typing: TypingState) => void // set typing state for a participant
   markThreadRead: (threadId: string) => void // reset unread count for agent
@@ -70,23 +71,28 @@ export const useChatStore = create<ChatState & ChatActions>()(
             message
           ])
         },
-        // Update thread last message time and unread count for agent. Unread count only increments if message is SENT and not from agent, ensuring accurate unread tracking. Centralized thread updates promote consistency across the app and simplify debugging. Mirrors backend message protocols for seamless integration.
+        // Update thread last message time and unread counts. Counts only increment for DELIVERED messages from the other participant, ensuring accurate unread tracking. Centralized thread updates promote consistency across the app and simplify debugging. Mirrors backend message protocols for seamless integration.
         threads: {
           ...state.threads,
           [message.threadId]: {
             ...state.threads[message.threadId],
             lastMessageAt: message.createdAt,
             unreadCountByAgent:
-              message.status === MessageStatus.SENT &&
+              message.status === MessageStatus.DELIVERED &&
               message.senderId !== 'agent'
                 ? state.threads[message.threadId].unreadCountByAgent + 1
-                : state.threads[message.threadId].unreadCountByAgent
+                : state.threads[message.threadId].unreadCountByAgent,
+            unreadCountByVisitor:
+              message.status === MessageStatus.DELIVERED &&
+              message.senderId === 'agent'
+                ? state.threads[message.threadId].unreadCountByVisitor + 1
+                : state.threads[message.threadId].unreadCountByVisitor
           }
         }
       }
     }),
 
-  // Traverse all threads and mark the target message as SENT. This allows for out-of-order ACKs, where the acknowledgment might arrive after subsequent messages. Centralized acknowledgment logic promotes consistency across the app and simplifies debugging. Mirrors backend message protocols for seamless integration across the app.
+  // Traverse all threads and mark the target message as DELIVERED without downgrading READ. This allows for out-of-order ACKs, where the acknowledgment might arrive after subsequent messages. Centralized acknowledgment logic promotes consistency across the app and simplifies debugging. Mirrors backend message protocols for seamless integration across the app.
   acknowledgeMessage: (messageId) =>
     set((state) => {
       const updatedMessages: ChatState['messages'] = {}
@@ -94,7 +100,9 @@ export const useChatStore = create<ChatState & ChatActions>()(
       for (const threadId in state.messages) {
         updatedMessages[threadId] = state.messages[threadId].map((m) =>
           m.id === messageId
-            ? { ...m, status: MessageStatus.SENT }
+            ? m.status === MessageStatus.READ
+              ? m
+              : { ...m, status: MessageStatus.DELIVERED }
             : m
         )
       }
@@ -118,6 +126,26 @@ export const useChatStore = create<ChatState & ChatActions>()(
       return { messages: updatedMessages }
     }),
 
+  // Apply read receipt for a thread by updating message statuses for the sender.
+  applyReadReceipt: (threadId, readerId) =>
+    set((state) => {
+      const threadMessages = state.messages[threadId] || []
+      const updatedMessages = threadMessages.map((message) =>
+        message.senderId !== readerId &&
+        (message.status === MessageStatus.DELIVERED ||
+          message.status === MessageStatus.SENT)
+          ? { ...message, status: MessageStatus.READ, readAt: Date.now() }
+          : message
+      )
+
+      return {
+        messages: {
+          ...state.messages,
+          [threadId]: updatedMessages
+        }
+      }
+    }),
+
   // Store typing state by a composite key threadId:participantId. This allows us to track typing indicators for multiple participants across multiple threads without collisions. Centralized typing logic promotes consistency across the app and simplifies debugging. Mirrors backend message protocols for seamless integration across the app.
   setTyping: (typing) =>
     set((state) => ({
@@ -127,28 +155,59 @@ export const useChatStore = create<ChatState & ChatActions>()(
       }
     })),
 
-  // Mark a thread as read by zeroing unread count for agent. This allows the UI to reflect that the agent has seen all messages in the thread. Centralized read logic promotes consistency across the app and simplifies debugging. Mirrors backend message protocols for seamless integration across the app.
+  // Mark a thread as read by zeroing unread count for agent and updating message statuses.
   markThreadRead: (threadId) =>
-    set((state) => ({
-      threads: {
-        ...state.threads,
-        [threadId]: {
-          ...state.threads[threadId],
-          unreadCountByAgent: 0
-        }
-      }
-    })),
+    set((state) => {
+      const threadMessages = state.messages[threadId] || []
+      const updatedMessages = threadMessages.map((message) =>
+        message.senderId != 'agent' &&
+        (message.status === MessageStatus.DELIVERED ||
+          message.status === MessageStatus.SENT)
+          ? { ...message, status: MessageStatus.READ, readAt: Date.now() }
+          : message
+      )
 
-  markThreadReadByVisitor: (threadId) =>
-    set((state) => ({
-      threads: {
-        ...state.threads,
-        [threadId]: {
-          ...state.threads[threadId],
-          unreadCountByVisitor: 0
+      return {
+        threads: {
+          ...state.threads,
+          [threadId]: {
+            ...state.threads[threadId],
+            unreadCountByAgent: 0
+          }
+        },
+        messages: {
+          ...state.messages,
+          [threadId]: updatedMessages
         }
       }
-    })),
+    }),
+
+  // Mark a thread as read by zeroing unread count for visitor and updating message statuses.
+  markThreadReadByVisitor: (threadId) =>
+    set((state) => {
+      const threadMessages = state.messages[threadId] || []
+      const updatedMessages = threadMessages.map((message) =>
+        message.senderId != 'visitor' &&
+        (message.status === MessageStatus.DELIVERED ||
+          message.status === MessageStatus.SENT)
+          ? { ...message, status: MessageStatus.READ, readAt: Date.now() }
+          : message
+      )
+
+      return {
+        threads: {
+          ...state.threads,
+          [threadId]: {
+            ...state.threads[threadId],
+            unreadCountByVisitor: 0
+          }
+        },
+        messages: {
+          ...state.messages,
+          [threadId]: updatedMessages
+        }
+      }
+    }),
     
 
   clearAll: () =>

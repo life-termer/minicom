@@ -6,6 +6,7 @@ import {
   MessageStatus,
   ParticipantRole,
   sendEvent,
+  sendReadReceipt,
 } from "@minicom/shared";
 import { Button } from "../atoms/Button";
 import { ChatWidgetHeader } from "../molecules/ChatWidgetHeader";
@@ -62,7 +63,7 @@ export function ChatWidget({
       senderId: "agent",
       body: "Hi! Welcome to MiniCom. How can we help today?",
       createdAt: Date.now(),
-      status: MessageStatus.SENT,
+      status: MessageStatus.DELIVERED,
     });
   };
 
@@ -84,12 +85,22 @@ export function ChatWidget({
   const messages = useChatStore(
     (s) => s.messages[threadId ?? ""] || emptyMessages,
   );
+  const hasUnreadForVisitor = useMemo(() => {
+    if (!threadId) return false;
+    return messages.some(
+      (message) =>
+        message.senderId === "agent" &&
+        (message.status === MessageStatus.DELIVERED ||
+          message.status === MessageStatus.SENT)
+    );
+  }, [threadId, messages]);
 
   useEffect(() => {
     if (!isOpen || !threadId) return;
-    if (messages.length === 0) return;
+    if (!hasUnreadForVisitor) return;
     markThreadReadByVisitor(threadId);
-  }, [isOpen, threadId, messages.length, markThreadReadByVisitor]);
+    sendReadReceipt(threadId, "visitor");
+  }, [isOpen, threadId, hasUnreadForVisitor, markThreadReadByVisitor]);
 
   const isTyping = useChatStore((s) => {
     if (!threadId) return false

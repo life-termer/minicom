@@ -26,7 +26,7 @@ export function MessageBubble({
   return (
     <div className={`flex ${align}`}>
       <div
-        className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm shadow-sm tabIndex={0} ${bubble} ${
+        className={`max-w-[75%] min-w-36 rounded-2xl px-3 py-2 text-sm shadow-sm tabIndex={0} ${bubble} ${
           className ?? ""
         }`}
       >

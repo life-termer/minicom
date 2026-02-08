@@ -41,9 +41,9 @@ export function InboxListItem({
       </div>
       <div className="mt-2 flex items-center justify-between gap-2">
         <p className="line-clamp-1 text-xs text-[var(--mc-text-muted)]">
-          {thread.lastMessageAt}
+          {new Date(thread.lastMessageAt).toLocaleTimeString([], { year: "numeric",
+  month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}
         </p>
-        <UnreadBadge count={unreadCount} />
         {/* {thread.status === "urgent" ? (
           <Badge variant="warning">Urgent</Badge>
         ) : (

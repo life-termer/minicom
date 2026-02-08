@@ -44,7 +44,7 @@ export default function Home() {
   }, [isDark]);
 
   React.useEffect(() => {
-    const unsubscribe = bindRealtime();
+    const unsubscribe = bindRealtime({ currentUserId: "visitor" });
     return unsubscribe;
   }, []);
 

@@ -4,5 +4,6 @@ import { Message, TypingState, Thread } from '@minicom/shared'
 export type ChatEvent =
   | { type: 'MESSAGE_SEND'; payload: Message }
   | { type: 'MESSAGE_ACK'; payload: { messageId: string } }
+  | { type: 'MESSAGE_READ'; payload: { threadId: string; readerId: string } }
   | { type: 'TYPING'; payload: TypingState }
   | { type: 'THREAD_INIT'; payload: Thread }

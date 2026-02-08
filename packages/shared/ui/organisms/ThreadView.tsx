@@ -4,6 +4,7 @@ import { useChatStore } from '@minicom/shared'
 import { generateId } from '@minicom/shared'
 import { MessageStatus } from '@minicom/shared'
 import { sendMessageOptimistic } from '@minicom/shared'
+import { sendReadReceipt } from '@minicom/shared'
 
 export function ThreadView({ threadId }: { threadId?: string }) {
   const messageMap = useChatStore((s) => s.messages)
@@ -15,14 +16,32 @@ export function ThreadView({ threadId }: { threadId?: string }) {
 
   const clearAll = useChatStore((s) => s.clearAll)
   const markRead = useChatStore((s) => s.markThreadRead)
-  
-
+  const unreadCountByAgent = useChatStore(
+    (s) => (threadId ? s.threads[threadId]?.unreadCountByAgent ?? 0 : 0)
+  )
 
   useEffect(() => {
     if (!threadId) return
-    if (messages.length === 0) return
+    if (unreadCountByAgent === 0) return
     markRead(threadId)
-  }, [threadId, messages.length, markRead])
+    sendReadReceipt(threadId, 'agent')
+  }, [threadId, unreadCountByAgent, markRead])
+
+  const isTyping = useChatStore((s) => {
+    if (!threadId) return false
+    for (const key in s.typing) {
+      const typing = s.typing[key]
+      if (
+        typing.threadId === threadId &&
+        typing.isTyping &&
+        typing.participantId !== "agent"
+      ) {
+        return true
+      }
+    }
+    return false
+  })
+  
 
   if (!threadId) {
     return (
@@ -33,7 +52,7 @@ export function ThreadView({ threadId }: { threadId?: string }) {
   }
 
   return (
-    <div className="flex h-[calc(100%-60px)] flex-col">
+    <div className="flex relative h-[calc(100%-60px)] flex-col">
       <div className="flex items-center justify-end border-b border-[var(--mc-border)] px-4 py-2">
         <Button size="sm" variant="outline" onClick={clearAll}>
           Clear all threads
@@ -47,7 +66,11 @@ export function ThreadView({ threadId }: { threadId?: string }) {
         />
       </div>
 
-     
+     {isTyping && (
+               <div className='absolute bottom-16 left-6 z-50 w-[calc(100%-3rem)] sm:w-[320px] px-5 py-2'>
+                 <TypingIndicator label="Agent is typing..." />
+               </div>
+             )}
 
       <ChatInput threadId={threadId} authorId="agent" placeholder="Reply…" />
     </div>
