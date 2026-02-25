@@ -68,29 +68,6 @@ Same-origin only and browser-scoped — suitable for demos, not for production c
 
 ---
 
-## How AI Helped
-
-AI was used **extensively and intentionally** throughout this project, mainly to help with architecture decisions like state management, data flow, and real-time behavior.
-
-I’m a mid-level frontend developer, and this task clearly goes into senior-level territory. Some parts of the system were outside my usual day-to-day work, so I used AI as a learning partner to think through solutions, double-check decisions, and avoid obvious mistakes while working under time pressure.
-
-AI helped me:
-
-- Think through **message status transitions** (`sending → sent → delivered → read`)
-- Design a **store structure** that supports unread counts, read receipts, and optimistic updates
-- Identify tricky **edge cases**, such as ACKs arriving out of order or shared persistence across apps
-- Speed up iteration while still understanding and refining the final solution
-
-Example prompts I used:
-
-- “Where should optimistic state live in a real-time chat app?”
-- “How should unread counts update without double counting?”
-- “How do I prevent a READ status from being overwritten by a later ACK?”
-
-I reviewed, adjusted, and simplified AI-generated ideas to fit my own understanding and the scope of this project. It helped me learn faster and try patterns I’m actively growing into. This project reflects both my current skill set and my motivation to take on senior-level challenges, learn from them, and continue developing as an engineer if given the opportunity.
-
----
-
 ## Improvements With More Time
 
 - Replace `BroadcastChannel` with a real backend (WebSockets + server persistence)
